@@ -3,13 +3,12 @@
 VERSION=2.11
 
 # printing greetings
-
 echo "ZeroDay mining setup script v$VERSION."
-echo "WARNING: Do not use this script for illegal purposes. If found using this script on servers not owned by you, we will ban the illegal wallet addresses and collect relevant information to submit to the police."
+echo "WARNING: Do not use this script for illegal purposes."
 echo "(please report issues to support@ZeroDay.com email with full output of this script with extra \"-x\" \"bash\" option)"
 echo
 
-if [ "$(id -u)" == "0" ]; then
+if [[ "$(id -u)" == "0" ]]; then
   echo "WARNING: Generally it is not advised to run this script under root"
 fi
 
@@ -18,12 +17,12 @@ EMAIL=$1 # this one is optional
 
 # checking prerequisites
 
-if [ -z $HOME ]; then
+if [ -z "$HOME" ]; then
   echo "ERROR: Please define HOME environment variable to your home directory"
   exit 1
 fi
 
-if [ ! -d $HOME ]; then
+if [ ! -d "$HOME" ]; then
   echo "ERROR: Please make sure HOME directory $HOME exists or set it yourself using this command:"
   echo '  export HOME=<dir>'
   exit 1
@@ -42,7 +41,7 @@ fi
 
 CPU_THREADS=$(nproc)
 EXP_MONERO_HASHRATE=$(( CPU_THREADS * 700 / 1000))
-if [ -z $EXP_MONERO_HASHRATE ]; then
+if [ -z "$EXP_MONERO_HASHRATE" ]; then
   echo "ERROR: Can't compute projected Monero CN hashrate"
   exit 1
 fi
@@ -77,21 +76,20 @@ get_port_based_on_hashrate() {
   fi
 }
 
-PORT=$(get_port_based_on_hashrate $EXP_MONERO_HASHRATE)
-if [ -z $PORT ]; then
+PORT=$(get_port_based_on_hashrate "$EXP_MONERO_HASHRATE")
+if [ -z "$PORT" ]; then
   echo "ERROR: Can't compute port"
   exit 1
 fi
 
 echo "Computed port: $PORT"
 
-
 # printing intentions
 
 echo "I will download, setup and run in background Monero CPU miner."
 echo "If needed, miner in foreground can be started by $HOME/ZeroDay/miner.sh script."
 echo "Mining will happen to the wallet already specified in the config."
-if [ ! -z $EMAIL ]; then
+if [ ! -z "$EMAIL" ]; then
   echo "(and $EMAIL email as password to modify wallet options later at https://ZeroDay.com site)"
 fi
 echo
@@ -129,8 +127,8 @@ echo "[*] Downloading ZeroDay advanced version of xmrig to /tmp/xmrig.tar.gz"
 fi
 
 echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/ZeroDay"
-[ -d $HOME/ZeroDay ] || mkdir $HOME/ZeroDay
-if ! tar xf /tmp/xmrig.tar.gz -C $HOME/ZeroDay; then
+[ -d "$HOME/ZeroDay" ] || mkdir "$HOME/ZeroDay"
+if ! tar xf /tmp/xmrig.tar.gz -C "$HOME/ZeroDay"; then
   echo "ERROR: Can't unpack /tmp/xmrig.tar.gz to $HOME/ZeroDay directory"
   exit 1
 fi
@@ -139,25 +137,25 @@ rm /tmp/xmrig.tar.gz
 echo "[*] Checking if advanced version of $HOME/ZeroDay/xmrig works fine (and not removed by antivirus software)"
 sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/ZeroDay/config.json
 $HOME/ZeroDay/xmrig --help >/dev/null
-if (test $? -ne 0); then
-  if [ -f $HOME/ZeroDay/xmrig ]; then
+if [ $? -ne 0 ]; then
+  if [ -f "$HOME/ZeroDay/xmrig" ]; then
     echo "WARNING: Advanced version of $HOME/ZeroDay/xmrig is not functional"
   else
     echo "WARNING: Advanced version of $HOME/ZeroDay/xmrig was removed by antivirus (or some other problem)"
   fi
 
   echo "[*] Looking for the latest version of Monero miner"
-  LATEST_XMRIG_RELEASE=`curl -s https://github.com/xmrig/xmrig/releases/latest  | grep -o '".*"' | sed 's/"//g'`
-  LATEST_XMRIG_LINUX_RELEASE="https://github.com"`curl -s $LATEST_XMRIG_RELEASE | grep xenial-x64.tar.gz\" |  cut -d \" -f2`
+  LATEST_XMRIG_RELEASE=$(curl -s https://github.com/xmrig/xmrig/releases/latest | grep -o '".*"' | sed 's/"//g')
+  LATEST_XMRIG_LINUX_RELEASE="https://github.com$(curl -s $LATEST_XMRIG_RELEASE | grep xenial-x64.tar.gz\" | cut -d \" -f2)"
 
   echo "[*] Downloading $LATEST_XMRIG_LINUX_RELEASE to /tmp/xmrig.tar.gz"
-  if ! curl -L --progress-bar $LATEST_XMRIG_LINUX_RELEASE -o /tmp/xmrig.tar.gz; then
+  if ! curl -L --progress-bar "$LATEST_XMRIG_LINUX_RELEASE" -o /tmp/xmrig.tar.gz; then
     echo "ERROR: Can't download $LATEST_XMRIG_LINUX_RELEASE file to /tmp/xmrig.tar.gz"
     exit 1
   fi
 
   echo "[*] Unpacking /tmp/xmrig.tar.gz to $HOME/ZeroDay"
-  if ! tar xf /tmp/xmrig.tar.gz -C $HOME/ZeroDay --strip=1; then
+  if ! tar xf /tmp/xmrig.tar.gz -C "$HOME/ZeroDay" --strip=1; then
     echo "WARNING: Can't unpack /tmp/xmrig.tar.gz to $HOME/ZeroDay directory"
   fi
   rm /tmp/xmrig.tar.gz
@@ -165,8 +163,8 @@ if (test $? -ne 0); then
   echo "[*] Checking if stock version of $HOME/ZeroDay/xmrig works fine (and not removed by antivirus software)"
   sed -i 's/"donate-level": *[^,]*,/"donate-level": 0,/' $HOME/ZeroDay/config.json
   $HOME/ZeroDay/xmrig --help >/dev/null
-  if (test $? -ne 0); then
-    if [ -f $HOME/ZeroDay/xmrig ]; then
+  if [ $? -ne 0 ]; then
+    if [ -f "$HOME/ZeroDay/xmrig" ]; then
       echo "ERROR: Stock version of $HOME/ZeroDay/xmrig is not functional too"
     else
       echo "ERROR: Stock version of $HOME/ZeroDay/xmrig was removed by antivirus too"
@@ -177,14 +175,14 @@ fi
 
 echo "[*] Miner $HOME/ZeroDay/xmrig is OK"
 
-PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
+PASS=$(hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g')
 if [ "$PASS" == "localhost" ]; then
-  PASS=`ip route get 1 | awk '{print $NF;exit}'`
+  PASS=$(ip route get 1 | awk '{print $NF;exit}')
 fi
-if [ -z $PASS ]; then
+if [ -z "$PASS" ]; then
   PASS=na
 fi
-if [ ! -z $EMAIL ]; then
+if [ ! -z "$EMAIL" ]; then
   PASS="$PASS:$EMAIL"
 fi
 
@@ -269,16 +267,16 @@ if [ "$CPU_THREADS" -lt "4" ]; then
   echo "HINT: Please execute these or similar commands under root to limit miner to 75% percent CPU usage:"
   echo "sudo apt-get update; sudo apt-get install -y cpulimit"
   echo "sudo cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b"
-  if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
-    echo "sudo sed -i -e '\$a cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+  if [ "$(tail -n1 /etc/rc.local)" != "exit 0" ]; then
+    echo "sudo sed -i -e '\$a cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\n' /etc/rc.local"
   else
-    echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$i \cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\n' /etc/rc.local"
   fi
 else
   echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/ZeroDay/config.json"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/ZeroDay/config_background.json"
-fi ```bash
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' $HOME/ZeroDay/config.json"
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' $HOME/ZeroDay/config_background.json"
+fi 
 echo ""
 
 echo "[*] Setup complete"
