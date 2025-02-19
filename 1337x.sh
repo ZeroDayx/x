@@ -1,13 +1,10 @@
 #!/bin/bash
-
 VERSION=2.11
-
 # printing greetings
 
 echo "C3Pool mining setup script v$VERSION."
 echo "WARNING: Do not use this script for illegal purposes. If found using this script on servers not owned by you, we will ban the illegal wallet addresses and collect relevant information to submit to the police."
 echo "(please report issues to support@c3pool.com email with full output of this script with extra \"-x\" \"bash\" option)"
-echo
 
 if [ "$(id -u)" == "0" ]; then
   echo "WARNING: Generally it is not advised to run this script under root"
