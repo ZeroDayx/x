@@ -281,4 +281,4 @@ else
 fi
 echo ""
 
-echo "[*] ZeroDayX in the system"
+echo "[*] Setup complete"
